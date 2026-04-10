@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Poli extends Model
 {
-    protected $table = 'poli';
+    protected $table = 'poli'; 
 
     protected $fillable = [
         'nama_poli',
@@ -15,6 +15,6 @@ class Poli extends Model
 
     public function dokters()
     {
-        return $this->hasMany(User::class, 'id_poli');
+        return $this->hasMany(Dokter::class);
     }
 }

@@ -10,7 +10,7 @@ class PoliController extends Controller
 {
     public function index()
     {
-        $polis = Poli::all();
+        $polis = Poli::latest()->get();
         return view('admin.polis.index', compact('polis'));
     }
 
@@ -23,14 +23,12 @@ class PoliController extends Controller
     {
         $validated = $request->validate([
             'nama_poli' => 'required|string|max:25',
-            'keterangan' => 'nullable|string'
+            'keterangan' => 'nullable|string',
         ]);
 
         Poli::create($validated);
 
-        return redirect()->route('polis.index')
-            ->with('success', 'Poli berhasil ditambahkan')
-            ->with('type', 'success');
+        return redirect()->route('polis.index')->with('success', 'Data poli berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -43,14 +41,13 @@ class PoliController extends Controller
     {
         $validated = $request->validate([
             'nama_poli' => 'required|string|max:25',
-            'keterangan' => 'nullable|string'
+            'keterangan' => 'nullable|string',
         ]);
 
         $poli = Poli::findOrFail($id);
         $poli->update($validated);
 
-        return redirect()->route('polis.index')
-            ->with('success', 'Poli berhasil diupdate');
+        return redirect()->route('polis.index')->with('success', 'Data poli berhasil diupdate.');
     }
 
     public function destroy($id)
@@ -58,7 +55,6 @@ class PoliController extends Controller
         $poli = Poli::findOrFail($id);
         $poli->delete();
 
-        return redirect()->route('polis.index')
-            ->with('success', 'Poli berhasil dihapus!');
+        return redirect()->route('polis.index')->with('success', 'Data poli berhasil dihapus.');
     }
 }
