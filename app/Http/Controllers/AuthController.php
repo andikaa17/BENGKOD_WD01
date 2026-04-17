@@ -16,21 +16,30 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->validate([
+            'email'    => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
         if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
             $user = Auth::user();
 
-            if ($user->role == 'admin') {
+            if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
-            } elseif ($user->role == 'dokter') {
-                return redirect()->route('dokter.dashboard');
-            } else {
-                return redirect()->route('pasien.dashboard');
             }
+
+            if ($user->role === 'dokter') {
+                return redirect()->route('dokter.dashboard');
+            }
+
+            return redirect()->route('pasien.dashboard');
         }
 
-        return back()->withErrors(['email' => 'Email atau Password Salah !']);
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ])->onlyInput('email');
     }
 
     public function showRegister()
@@ -41,34 +50,45 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'nama' => ['required', 'string', 'max:255'],
-            'alamat' => ['required', 'string', 'max:255'],
-            'no_ktp' => ['required', 'string', 'max:30'],
-            'no_hp' => ['required', 'string', 'max:20'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed'],
+            'nama'      => ['required', 'string', 'max:255'],
+            'alamat'    => ['required', 'string', 'max:255'],
+            'no_ktp'    => ['required', 'string', 'max:30', 'unique:users,no_ktp'],
+            'no_hp'     => ['required', 'string', 'max:20'],
+            'email'     => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password'  => ['required', 'confirmed', 'min:6'],
         ]);
 
-        if (User::where('no_ktp', $request->no_ktp)->exists()) {
-            return back()->withErrors(['no_ktp' => 'Nomor Ktp Sudah terdaftar']);
+        $lastPasien = User::where('role', 'pasien')->latest('id')->first();
+        $lastNumber = 0;
+
+        if ($lastPasien && $lastPasien->no_rm) {
+            $lastNumber = (int) preg_replace('/[^0-9]/', '', $lastPasien->no_rm);
         }
 
+        $newNoRm = 'RM' . str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+
         User::create([
-            'nama' => $request->nama,
-            'alamat' => $request->alamat,
-            'no_ktp' => $request->no_ktp,
-            'no_hp' => $request->no_hp,
-            'email' => $request->email,
+            'nama'     => $request->nama,
+            'alamat'   => $request->alamat,
+            'no_ktp'   => $request->no_ktp,
+            'no_hp'    => $request->no_hp,
+            'no_rm'    => $newNoRm,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'pasien',
+            'role'     => 'pasien',
         ]);
 
-        return redirect()->route('login');
+        return redirect()->route('login')
+            ->with('success', 'Registrasi berhasil, silakan login.');
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect()->route('login');
     }
 }
