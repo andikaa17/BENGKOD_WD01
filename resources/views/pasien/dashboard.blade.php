@@ -318,7 +318,8 @@
 
             refreshAllAntrianByTime();
             setInterval(refreshAllAntrianByTime, 1000);
-
+            
+// FRONT END REALTIME
             if (typeof window.Echo !== 'undefined') {
                 window.Echo.channel('antrian-channel')
                     .listen('.AntrianUpdated', (data) => {

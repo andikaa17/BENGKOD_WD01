@@ -28,42 +28,43 @@ class PasienController extends Controller
         $request->validate([
             'nama'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
-            'no_ktp'   => 'nullable|string|max:30|unique:users,no_ktp',
-            'alamat'   => 'nullable|string',
-            'no_hp'    => 'nullable|string|max:20',
+            'no_ktp'   => 'required|string|max:30|unique:users,no_ktp',
+            'alamat'   => 'required|string|max:255',
+            'no_hp'    => 'required|string|max:20',
             'password' => 'required|string|min:6',
         ], [
             'nama.required'     => 'Nama pasien wajib diisi.',
             'email.required'    => 'Email wajib diisi.',
             'email.email'       => 'Format email tidak valid.',
             'email.unique'      => 'Email sudah digunakan.',
+            'no_ktp.required'   => 'No. KTP wajib diisi.',
             'no_ktp.unique'     => 'No. KTP sudah digunakan.',
+            'alamat.required'   => 'Alamat wajib diisi.',
+            'no_hp.required'    => 'No. HP wajib diisi.',
             'password.required' => 'Password wajib diisi.',
             'password.min'      => 'Password minimal 6 karakter.',
         ]);
 
-        // 🔥 GENERATE NO RM OTOMATIS
         $lastPasien = User::where('role', 'pasien')
-            ->orderBy('id', 'desc')
+            ->latest('id')
             ->first();
 
+        $lastNumber = 0;
+
         if ($lastPasien && $lastPasien->no_rm) {
-            $lastNumber = (int) substr($lastPasien->no_rm, 2);
-            $newNumber  = $lastNumber + 1;
-        } else {
-            $newNumber = 1;
+            $lastNumber = (int) preg_replace('/[^0-9]/', '', $lastPasien->no_rm);
         }
 
-        $noRM = 'RM' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+        $newNoRm = 'RM' . str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
 
         User::create([
             'nama'     => $request->nama,
             'email'    => $request->email,
-            'no_ktp'   => $request->no_ktp, // 🔥 FIX
+            'no_ktp'   => $request->no_ktp,
             'alamat'   => $request->alamat,
             'no_hp'    => $request->no_hp,
             'role'     => 'pasien',
-            'no_rm'    => $noRM,
+            'no_rm'    => $newNoRm,
             'password' => Hash::make($request->password),
         ]);
 
@@ -88,16 +89,16 @@ class PasienController extends Controller
         $request->validate([
             'nama'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email,' . $pasien->id,
-            'no_ktp'   => 'nullable|string|max:30|unique:users,no_ktp,' . $pasien->id,
-            'alamat'   => 'nullable|string',
-            'no_hp'    => 'nullable|string|max:20',
+            'no_ktp'   => 'required|string|max:30|unique:users,no_ktp,' . $pasien->id,
+            'alamat'   => 'required|string|max:255',
+            'no_hp'    => 'required|string|max:20',
             'password' => 'nullable|string|min:6',
         ]);
 
         $data = [
             'nama'   => $request->nama,
             'email'  => $request->email,
-            'no_ktp' => $request->no_ktp, // 🔥 FIX
+            'no_ktp' => $request->no_ktp,
             'alamat' => $request->alamat,
             'no_hp'  => $request->no_hp,
         ];

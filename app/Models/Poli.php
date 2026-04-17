@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
 
 class Poli extends Model
 {
@@ -18,12 +19,10 @@ class Poli extends Model
         'kode_poli',
     ];
 
+    // Relasi dokter ke poli
     public function dokters()
     {
-        return $this->hasMany(User::class, 'id_poli')->where('role', 'dokter');
-    }
-    public function poli()
-    {
-        return $this->belongsTo(Poli::class, 'id_poli');
+        return $this->hasMany(User::class, 'id_poli')
+                    ->where('role', 'dokter');
     }
 }

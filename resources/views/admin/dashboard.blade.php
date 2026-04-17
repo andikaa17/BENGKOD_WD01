@@ -1,9 +1,9 @@
 <x-layouts.app title="Admin Dashboard">
 
     @php
-    \Carbon\Carbon::setLocale('id');
-    $today = \Carbon\Carbon::now()->translatedFormat('l, d F Y');
-@endphp
+        \Carbon\Carbon::setLocale('id');
+        $today = \Carbon\Carbon::now()->translatedFormat('l, d F Y');
+    @endphp
 
     {{-- Header --}}
     <div class="mb-6">
@@ -112,7 +112,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full bg-sky-100 text-sky-600 text-sm font-medium">
-                                        Dokter
+                                        {{ $poli->dokters_count ?? 0 }} Dokter
                                     </span>
                                 </td>
                             </tr>

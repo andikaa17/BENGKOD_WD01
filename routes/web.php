@@ -59,7 +59,7 @@ Route::middleware(['auth', 'role:admin'])
                 'totalDokter' => User::where('role', 'dokter')->count(),
                 'totalPasien' => User::where('role', 'pasien')->count(),
                 'totalObat'   => Obat::count(),
-                'polis'       => Poli::latest('updated_at')->take(5)->get(),
+                'polis'       => Poli::withCount('dokters')->latest('updated_at')->take(5)->get(),
             ]);
         })->name('dashboard');
 
