@@ -32,8 +32,8 @@ class PeriksaController extends Controller
             ->whereHas('jadwalPeriksa', function ($query) use ($dokterId, $hariIniIndo, $hariIniEnglish) {
                 $query->where('id_dokter', $dokterId)
                     ->where(function ($q) use ($hariIniIndo, $hariIniEnglish) {
-                        $q->where('hari', 'LIKE', $hariIniIndo)
-                          ->orWhere('hari', 'LIKE', $hariIniEnglish);
+                        $q->where('hari', $hariIniIndo)
+                            ->orWhere('hari', $hariIniEnglish);
                     });
             })
             ->leftJoin('periksa', 'daftar_poli.id', '=', 'periksa.id_daftar_poli')
@@ -45,7 +45,7 @@ class PeriksaController extends Controller
         return view('dokter.periksa-pasien.index', compact('daftarPolis'));
     }
 
-    public function create($id)
+    public function create(string $id)
     {
         $daftar = DaftarPoli::with([
                 'pasien',
@@ -78,9 +78,9 @@ class PeriksaController extends Controller
     {
         $request->validate([
             'id_daftar_poli' => 'required|exists:daftar_poli,id',
-            'catatan' => 'nullable|string',
-            'obat' => 'required|array|min:1',
-            'obat.*' => 'exists:obat,id',
+            'catatan'        => 'nullable|string',
+            'obat'           => 'required|array|min:1',
+            'obat.*'         => 'exists:obat,id',
         ]);
 
         $daftar = DaftarPoli::with([
@@ -107,9 +107,7 @@ class PeriksaController extends Controller
 
                 foreach ($obats as $obat) {
                     if ($obat->stok <= 0) {
-                        throw new \Exception(
-                            "Maaf, stok obat '" . $obat->nama_obat . "' habis."
-                        );
+                        throw new \Exception("Maaf, stok obat '{$obat->nama_obat}' habis.");
                     }
                 }
 
@@ -119,15 +117,15 @@ class PeriksaController extends Controller
 
                 $periksa = Periksa::create([
                     'id_daftar_poli' => $daftar->id,
-                    'tgl_periksa' => now(),
-                    'catatan' => $request->catatan,
-                    'biaya_periksa' => $totalBiaya,
+                    'tgl_periksa'    => now(),
+                    'catatan'        => $request->catatan,
+                    'biaya_periksa'  => $totalBiaya,
                 ]);
 
                 foreach ($obats as $obat) {
                     DetailPeriksa::create([
                         'id_periksa' => $periksa->id,
-                        'id_obat' => $obat->id,
+                        'id_obat'    => $obat->id,
                     ]);
 
                     $obat->decrement('stok', 1);

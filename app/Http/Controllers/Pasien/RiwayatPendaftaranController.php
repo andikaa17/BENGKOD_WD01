@@ -10,7 +10,10 @@ class RiwayatPendaftaranController extends Controller
 {
     public function index()
     {
-        $riwayats = DaftarPoli::with(['jadwalPeriksa.dokter.poli', 'periksa'])
+        $riwayats = DaftarPoli::with([
+                'jadwalPeriksa.dokter.poli',
+                'periksa'
+            ])
             ->where('id_pasien', Auth::id())
             ->latest()
             ->get();
@@ -18,7 +21,7 @@ class RiwayatPendaftaranController extends Controller
         return view('pasien.riwayat-pendaftaran.index', compact('riwayats'));
     }
 
-    public function show($id)
+    public function show(string $id)
     {
         $riwayat = DaftarPoli::with([
                 'jadwalPeriksa.dokter.poli',

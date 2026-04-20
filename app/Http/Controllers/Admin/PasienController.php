@@ -75,16 +75,14 @@ class PasienController extends Controller
 
     public function edit(string $id)
     {
-        $pasien = User::where('role', 'pasien')
-            ->findOrFail($id);
+        $pasien = User::where('role', 'pasien')->findOrFail($id);
 
         return view('admin.pasien.edit', compact('pasien'));
     }
 
     public function update(Request $request, string $id)
     {
-        $pasien = User::where('role', 'pasien')
-            ->findOrFail($id);
+        $pasien = User::where('role', 'pasien')->findOrFail($id);
 
         $request->validate([
             'nama'     => 'required|string|max:255',
@@ -93,6 +91,16 @@ class PasienController extends Controller
             'alamat'   => 'required|string|max:255',
             'no_hp'    => 'required|string|max:20',
             'password' => 'nullable|string|min:6',
+        ], [
+            'nama.required'   => 'Nama pasien wajib diisi.',
+            'email.required'  => 'Email wajib diisi.',
+            'email.email'     => 'Format email tidak valid.',
+            'email.unique'    => 'Email sudah digunakan.',
+            'no_ktp.required' => 'No. KTP wajib diisi.',
+            'no_ktp.unique'   => 'No. KTP sudah digunakan.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'no_hp.required'  => 'No. HP wajib diisi.',
+            'password.min'    => 'Password minimal 6 karakter.',
         ]);
 
         $data = [
@@ -116,9 +124,7 @@ class PasienController extends Controller
 
     public function destroy(string $id)
     {
-        $pasien = User::where('role', 'pasien')
-            ->findOrFail($id);
-
+        $pasien = User::where('role', 'pasien')->findOrFail($id);
         $pasien->delete();
 
         return redirect()

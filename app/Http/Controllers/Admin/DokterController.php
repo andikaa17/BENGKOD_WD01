@@ -33,14 +33,21 @@ class DokterController extends Controller
             'nama'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'no_ktp'   => 'required|string|max:255|unique:users,no_ktp', // Validasi Unique KTP
+            'no_ktp'   => 'required|string|max:255|unique:users,no_ktp',
             'no_hp'    => 'nullable|string|max:255',
             'alamat'   => 'nullable|string|max:255',
             'id_poli'  => 'required|exists:poli,id',
         ], [
-            // Pesan error bahasa Indonesia
-            'no_ktp.unique' => 'Nomor KTP sudah terdaftar.',
-            'email.unique'  => 'Email sudah digunakan.',
+            'nama.required'     => 'Nama dokter wajib diisi.',
+            'email.required'    => 'Email wajib diisi.',
+            'email.email'       => 'Format email tidak valid.',
+            'email.unique'      => 'Email sudah digunakan.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min'      => 'Password minimal 6 karakter.',
+            'no_ktp.required'   => 'Nomor KTP wajib diisi.',
+            'no_ktp.unique'     => 'Nomor KTP sudah terdaftar.',
+            'id_poli.required'  => 'Poli wajib dipilih.',
+            'id_poli.exists'    => 'Poli tidak ditemukan.',
         ]);
 
         User::create([
@@ -54,8 +61,9 @@ class DokterController extends Controller
             'role'     => 'dokter',
         ]);
 
-        return redirect()->route('admin.dokter.index')
-            ->with('success', 'Data dokter berhasil ditambahkan');
+        return redirect()
+            ->route('admin.dokter.index')
+            ->with('success', 'Data dokter berhasil ditambahkan.');
     }
 
     public function show(string $id)
@@ -83,13 +91,20 @@ class DokterController extends Controller
             'nama'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email,' . $dokter->id,
             'password' => 'nullable|string|min:6',
-            'no_ktp'   => 'required|string|max:255|unique:users,no_ktp,' . $dokter->id, // Kecualikan KTP sendiri saat update
+            'no_ktp'   => 'required|string|max:255|unique:users,no_ktp,' . $dokter->id,
             'no_hp'    => 'nullable|string|max:255',
             'alamat'   => 'nullable|string|max:255',
             'id_poli'  => 'required|exists:poli,id',
         ], [
-            'no_ktp.unique' => 'Nomor KTP sudah terdaftar.',
-            'email.unique'  => 'Email sudah digunakan.',
+            'nama.required'     => 'Nama dokter wajib diisi.',
+            'email.required'    => 'Email wajib diisi.',
+            'email.email'       => 'Format email tidak valid.',
+            'email.unique'      => 'Email sudah digunakan.',
+            'password.min'      => 'Password minimal 6 karakter.',
+            'no_ktp.required'   => 'Nomor KTP wajib diisi.',
+            'no_ktp.unique'     => 'Nomor KTP sudah terdaftar.',
+            'id_poli.required'  => 'Poli wajib dipilih.',
+            'id_poli.exists'    => 'Poli tidak ditemukan.',
         ]);
 
         $data = [
@@ -107,8 +122,9 @@ class DokterController extends Controller
 
         $dokter->update($data);
 
-        return redirect()->route('admin.dokter.index')
-            ->with('success', 'Data dokter berhasil diupdate');
+        return redirect()
+            ->route('admin.dokter.index')
+            ->with('success', 'Data dokter berhasil diupdate.');
     }
 
     public function destroy(string $id)
@@ -116,7 +132,8 @@ class DokterController extends Controller
         $dokter = User::where('role', 'dokter')->findOrFail($id);
         $dokter->delete();
 
-        return redirect()->route('admin.dokter.index')
-            ->with('success', 'Data dokter berhasil dihapus');
+        return redirect()
+            ->route('admin.dokter.index')
+            ->with('success', 'Data dokter berhasil dihapus.');
     }
 }

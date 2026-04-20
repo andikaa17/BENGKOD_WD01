@@ -25,7 +25,7 @@ class RiwayatController extends Controller
         return view('dokter.riwayat-pasien.index', compact('riwayatPasien'));
     }
 
-    public function show($id)
+    public function show(string $id)
     {
         $dokterId = Auth::id();
 

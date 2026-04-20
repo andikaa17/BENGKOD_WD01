@@ -26,24 +26,25 @@ class JadwalPeriksaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
-            'jam_mulai' => ['required', 'date_format:H:i'],
+            'hari'        => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'jam_mulai'   => ['required', 'date_format:H:i'],
             'jam_selesai' => ['required', 'date_format:H:i', 'after:jam_mulai'],
         ]);
 
         JadwalPeriksa::create([
-            'id_dokter' => Auth::id(),
-            'hari' => $request->hari,
-            'jam_mulai' => $request->jam_mulai,
-            'jam_selesai' => $request->jam_selesai,
+            'id_dokter'       => Auth::id(),
+            'hari'            => $request->hari,
+            'jam_mulai'       => $request->jam_mulai,
+            'jam_selesai'     => $request->jam_selesai,
             'current_antrian' => 0,
         ]);
 
-        return redirect()->route('dokter.jadwal-periksa.index')
+        return redirect()
+            ->route('dokter.jadwal-periksa.index')
             ->with('success', 'Jadwal berhasil ditambahkan.');
     }
 
-    public function edit($id)
+    public function edit(string $id)
     {
         $jadwal = JadwalPeriksa::where('id', $id)
             ->where('id_dokter', Auth::id())
@@ -52,11 +53,11 @@ class JadwalPeriksaController extends Controller
         return view('dokter.jadwal-periksa.edit', compact('jadwal'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, string $id)
     {
         $request->validate([
-            'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
-            'jam_mulai' => ['required', 'date_format:H:i'],
+            'hari'        => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'jam_mulai'   => ['required', 'date_format:H:i'],
             'jam_selesai' => ['required', 'date_format:H:i', 'after:jam_mulai'],
         ]);
 
@@ -65,16 +66,17 @@ class JadwalPeriksaController extends Controller
             ->firstOrFail();
 
         $jadwal->update([
-            'hari' => $request->hari,
-            'jam_mulai' => $request->jam_mulai,
+            'hari'        => $request->hari,
+            'jam_mulai'   => $request->jam_mulai,
             'jam_selesai' => $request->jam_selesai,
         ]);
 
-        return redirect()->route('dokter.jadwal-periksa.index')
+        return redirect()
+            ->route('dokter.jadwal-periksa.index')
             ->with('success', 'Jadwal berhasil diupdate.');
     }
 
-    public function destroy($id)
+    public function destroy(string $id)
     {
         $jadwal = JadwalPeriksa::where('id', $id)
             ->where('id_dokter', Auth::id())
@@ -82,7 +84,8 @@ class JadwalPeriksaController extends Controller
 
         $jadwal->delete();
 
-        return redirect()->route('dokter.jadwal-periksa.index')
+        return redirect()
+            ->route('dokter.jadwal-periksa.index')
             ->with('success', 'Jadwal berhasil dihapus.');
     }
 }

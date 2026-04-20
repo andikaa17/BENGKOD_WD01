@@ -12,7 +12,10 @@ class PembayaranController extends Controller
 {
     public function index()
     {
-        $tagihans = Periksa::with(['daftarPoli.pasien', 'daftarPoli.jadwalPeriksa.dokter'])
+        $tagihans = Periksa::with([
+                'daftarPoli.pasien',
+                'daftarPoli.jadwalPeriksa.dokter'
+            ])
             ->whereHas('daftarPoli', function ($query) {
                 $query->where('id_pasien', Auth::id());
             })
@@ -22,7 +25,7 @@ class PembayaranController extends Controller
         return view('pasien.pembayaran.index', compact('tagihans'));
     }
 
-    public function upload(Request $request, $id)
+    public function upload(Request $request, string $id)
     {
         $request->validate([
             'bukti_pembayaran' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -45,9 +48,9 @@ class PembayaranController extends Controller
         $path = $request->file('bukti_pembayaran')->store('bukti-pembayaran', 'public');
 
         $periksa->update([
-            'bukti_pembayaran' => $path,
+            'bukti_pembayaran'  => $path,
             'status_pembayaran' => 'menunggu_verifikasi',
-            'tgl_pembayaran' => now(),
+            'tgl_pembayaran'    => now(),
         ]);
 
         return back()->with('success', 'Bukti pembayaran berhasil diupload.');

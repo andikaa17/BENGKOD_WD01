@@ -10,7 +10,10 @@ class PembayaranController extends Controller
 {
     public function index()
     {
-        $pembayarans = Periksa::with(['daftarPoli.pasien', 'daftarPoli.jadwalPeriksa.dokter'])
+        $pembayarans = Periksa::with([
+                'daftarPoli.pasien',
+                'daftarPoli.jadwalPeriksa.dokter'
+            ])
             ->where(function ($query) {
                 $query->whereNotNull('bukti_pembayaran')
                       ->orWhere('status_pembayaran', 'ditolak');
@@ -21,7 +24,7 @@ class PembayaranController extends Controller
         return view('admin.pembayaran.index', compact('pembayarans'));
     }
 
-    public function konfirmasi($id)
+    public function konfirmasi(string $id)
     {
         $periksa = Periksa::findOrFail($id);
 
@@ -36,7 +39,7 @@ class PembayaranController extends Controller
         return back()->with('success', 'Pembayaran berhasil dikonfirmasi.');
     }
 
-    public function tolak($id)
+    public function tolak(string $id)
     {
         $periksa = Periksa::findOrFail($id);
 
@@ -49,8 +52,9 @@ class PembayaranController extends Controller
         }
 
         $periksa->update([
-            'bukti_pembayaran' => null,
+            'bukti_pembayaran'  => null,
             'status_pembayaran' => 'ditolak',
+            'tgl_pembayaran'    => null,
         ]);
 
         return back()->with('success', 'Bukti pembayaran ditolak. Pasien bisa upload ulang.');

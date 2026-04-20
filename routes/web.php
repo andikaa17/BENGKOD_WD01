@@ -63,7 +63,7 @@ Route::middleware(['auth', 'role:admin'])
             ]);
         })->name('dashboard');
 
-        // Export Excel Admin — taruh DI ATAS resource
+       
         Route::get('/dokter/export', [ExportController::class, 'dokter'])->name('dokter.export');
         Route::get('/pasien/export', [ExportController::class, 'pasien'])->name('pasien.export');
         Route::get('/obat/export', [ExportController::class, 'obat'])->name('obat.export');
@@ -86,11 +86,11 @@ Route::middleware(['auth', 'role:dokter'])
 
         Route::get('/dashboard', [DokterDashboardController::class, 'index'])->name('dashboard');
 
-        // Export Excel Dokter — taruh DI ATAS route parameter
+        
         Route::get('/jadwal-periksa/export', [ExportController::class, 'jadwalPeriksa'])->name('jadwal-periksa.export');
         Route::get('/riwayat-pasien/export', [ExportController::class, 'riwayatPasien'])->name('riwayat-pasien.export');
 
-        // Jadwal Periksa
+      
         Route::get('/jadwal-periksa', [JadwalPeriksaController::class, 'index'])->name('jadwal-periksa.index');
         Route::get('/jadwal-periksa/create', [JadwalPeriksaController::class, 'create'])->name('jadwal-periksa.create');
         Route::post('/jadwal-periksa', [JadwalPeriksaController::class, 'store'])->name('jadwal-periksa.store');
@@ -98,12 +98,11 @@ Route::middleware(['auth', 'role:dokter'])
         Route::put('/jadwal-periksa/{id}', [JadwalPeriksaController::class, 'update'])->name('jadwal-periksa.update');
         Route::delete('/jadwal-periksa/{id}', [JadwalPeriksaController::class, 'destroy'])->name('jadwal-periksa.destroy');
 
-        // Periksa Pasien
+        
         Route::get('/periksa-pasien', [PeriksaController::class, 'index'])->name('periksa-pasien.index');
         Route::get('/periksa/{id}', [PeriksaController::class, 'create'])->name('periksa.create');
         Route::post('/periksa', [PeriksaController::class, 'store'])->name('periksa.store');
 
-        // Riwayat Pasien
         Route::get('/riwayat-pasien', [RiwayatController::class, 'index'])->name('riwayat-pasien.index');
         Route::get('/riwayat-pasien/{id}', [RiwayatController::class, 'show'])->name('riwayat-pasien.show');
     });

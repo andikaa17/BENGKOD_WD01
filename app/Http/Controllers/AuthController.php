@@ -50,12 +50,12 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'nama'      => ['required', 'string', 'max:255'],
-            'alamat'    => ['required', 'string', 'max:255'],
-            'no_ktp'    => ['required', 'string', 'max:30', 'unique:users,no_ktp'],
-            'no_hp'     => ['required', 'string', 'max:20'],
-            'email'     => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password'  => ['required', 'confirmed', 'min:6'],
+            'nama'     => ['required', 'string', 'max:255'],
+            'alamat'   => ['required', 'string', 'max:255'],
+            'no_ktp'   => ['required', 'string', 'max:30', 'unique:users,no_ktp'],
+            'no_hp'    => ['required', 'string', 'max:20'],
+            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'confirmed', 'min:6'],
         ]);
 
         $lastPasien = User::where('role', 'pasien')->latest('id')->first();
@@ -78,7 +78,8 @@ class AuthController extends Controller
             'role'     => 'pasien',
         ]);
 
-        return redirect()->route('login')
+        return redirect()
+            ->route('login')
             ->with('success', 'Registrasi berhasil, silakan login.');
     }
 
